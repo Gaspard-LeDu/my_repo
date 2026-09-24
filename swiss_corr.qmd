@@ -1,0 +1,100 @@
+---
+title: "Swiss Fertility Dataset — Correlation Matrix"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    theme: cosmo
+    code-fold: true
+    embed-resources: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+library(corrplot)
+```
+
+## Load the data
+
+The `swiss` dataset (built into R) records socioeconomic indicators for 47 French-speaking cantons of Switzerland around 1888.
+
+```{r}
+#| label: load-data
+data(swiss)
+glimpse(swiss)
+```
+
+## Correlation matrix
+
+```{r}
+#| label: corr-plot
+#| fig-width: 8
+#| fig-height: 7
+#| fig-cap: "Correlations among the six variables in the swiss dataset (Pearson)."
+cor_mat <- cor(swiss)
+
+corrplot(
+  cor_mat,
+  method   = "color",
+  type     = "full",
+  order    = "hclust",
+  tl.col   = "black",
+  tl.srt   = 45,
+  tl.cex   = 1.1,
+  addCoef.col = "black",
+  number.cex  = 0.9,
+  col = colorRampPalette(c("#BB4444", "#FFFFFF", "#4477AA"))(200),
+  title = "Pearson correlations: swiss dataset",
+  mar   = c(0, 0, 2, 0)
+)
+```
+
+```{r}
+#| label: corr-table
+#| echo: false
+knitr::kable(
+  round(cor_mat, 2),
+  align = "c",
+  caption = "Correlation coefficients (rounded to 2 decimals)"
+)
+```
+
+## Interpretation of each correlation
+
+Each sentence below covers one of the 15 unique variable pairs (the diagonal is 1 by definition).
+
+### Fertility
+
+- **Fertility ~ Agriculture (r = 0.35):** Cantons with a larger share of the workforce in agriculture tend to have moderately higher fertility, consistent with more rural, traditional communities.
+- **Fertility ~ Examination (r = −0.65):** Cantons that score higher on the army examination (a proxy for recruit quality/education) have substantially lower fertility.
+- **Fertility ~ Education (r = −0.66):** Higher literacy/education rates are strongly associated with lower fertility, a classic demographic pattern.
+- **Fertility ~ Catholic (r = 0.46):** Cantons with a larger Catholic population show moderately higher fertility, plausibly reflecting religious norms around family size.
+- **Fertility ~ Infant.Mortality (r = 0.42):** Higher infant mortality goes hand in hand with higher fertility, as families may have more children when child survival is less certain.
+
+### Agriculture
+
+- **Agriculture ~ Examination (r = −0.69):** More agrarian cantons tend to score lower on the army examination, linking occupation structure to measured recruit quality.
+- **Agriculture ~ Education (r = −0.64):** Cantons reliant on agriculture generally have lower literacy/education levels.
+- **Agriculture ~ Catholic (r = 0.40):** Agricultural cantons are moderately more likely to be predominantly Catholic, reflecting the historical geography of Switzerland.
+- **Agriculture ~ Infant.Mortality (r = −0.06):** There is essentially no linear relationship between the share of agricultural workers and infant mortality.
+
+### Examination
+
+- **Examination ~ Education (r = 0.70):** This is the strongest positive association in the table: cantons with better-educated populations also produce higher army-examination scores.
+- **Examination ~ Catholic (r = −0.57):** Predominantly Catholic cantons tend to have lower examination scores, often attributed to language and schooling differences of the period.
+- **Examination ~ Infant.Mortality (r = −0.11):** Better examination performance is only weakly (and not meaningfully) related to lower infant mortality.
+
+### Education
+
+- **Education ~ Catholic (r = −0.15):** The relationship between education and the share of Catholics is weakly negative and close to negligible.
+- **Education ~ Infant.Mortality (r = −0.10):** Education and infant mortality show almost no linear association in these data.
+
+### Catholic
+
+- **Catholic ~ Infant.Mortality (r = 0.18):** Cantons with more Catholics have slightly higher infant mortality, but the association is weak.
+
+### Infant.Mortality
+
+- Infant mortality’s remaining pairwise relationships are all covered above; its only moderately strong link is with **Fertility (r = 0.42)**.
